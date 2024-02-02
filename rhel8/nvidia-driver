@@ -113,6 +113,11 @@ _install_prerequisites() (
     dnf config-manager --set-enabled rhel-8-for-$DRIVER_ARCH-baseos-eus-rpms  || true
     if ! dnf makecache --releasever=${DNF_RELEASEVER}; then
     	dnf config-manager --set-disabled rhel-8-for-$DRIVER_ARCH-baseos-eus-rpms || true
+    	# Now retry dnf makecache without EUS
+    	if ! dnf makecache --release=${DNF_RELEASEVER}; then
+    	  echo "Failed to update the dnf metadata cache with release ${DNF_RELEASEVER}"
+    	  return 1
+    	fi
     fi
 
     echo "Installing Linux kernel headers..."
